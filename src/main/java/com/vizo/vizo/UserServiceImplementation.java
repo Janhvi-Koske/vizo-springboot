@@ -30,31 +30,31 @@ public class UserServiceImplementation implements UserService {
 
     @Override
     @Transactional
-    public User followUser(Integer userId1, Integer userId2) throws Exception {
-        if (userId1.equals(userId2)) {
+    public User followUser(Integer reqUserId, Integer userId2) throws Exception {
+        if (reqUserId.equals(userId2)) {
             throw new Exception("You cannot follow yourself");
         }
 
-        User user1 = findUserById(userId1); // follower
-        User user2 = findUserById(userId2); // being followed
+        User reqUser = findUserById(reqUserId); // follower
+        User user2 = findUserById(userId2);     // being followed
 
-        boolean alreadyFollowing = user1.getFollowings().stream()
+        boolean alreadyFollowing = reqUser.getFollowings().stream()
                 .anyMatch(u -> u.getId().equals(user2.getId()));
 
         if (alreadyFollowing) {
-            // Unfollow toggle
-            user1.getFollowings().removeIf(u -> u.getId().equals(user2.getId()));
-            user2.getFollowers().removeIf(u -> u.getId().equals(user1.getId()));
+            // Unfollow
+            reqUser.getFollowings().removeIf(u -> u.getId().equals(user2.getId()));
+            user2.getFollowers().removeIf(u -> u.getId().equals(reqUser.getId()));
         } else {
             // Follow
-            user1.getFollowings().add(user2);
-            user2.getFollowers().add(user1);
+            reqUser.getFollowings().add(user2);
+            user2.getFollowers().add(reqUser);
         }
 
-        userRepository.save(user1);
+        userRepository.save(reqUser);
         userRepository.save(user2);
 
-        return user1;
+        return reqUser;
     }
 
     @Override
@@ -74,5 +74,12 @@ public class UserServiceImplementation implements UserService {
     @Override
     public List<User> searchUser(String query) {
         return userRepository.searchUser(query);
+    }
+
+    @Override
+    public User findUserByJwt(String jwt) {
+        String email = JwtProvider.getEmailFromJwtToken(jwt);
+        User user = userRepository.findByEmail(email);
+        return user;
     }
 }
