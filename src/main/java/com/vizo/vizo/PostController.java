@@ -32,7 +32,7 @@ public class PostController {
     }
 
     // Delete post
-    @DeleteMapping("/post/{postId}")
+    @DeleteMapping("/api/post/{postId}")
     public ResponseEntity<ApiResponse> deletePost(@RequestHeader("Authorization") String jwt,@PathVariable Integer postId) throws Exception {
          User reqUser=userService.findUserByJwt(jwt);
         String message = postService.deletePost(postId, reqUser.getId());
@@ -41,28 +41,28 @@ public class PostController {
     }
 
     // Find post by id
-    @GetMapping("/posts/{postId}")
+    @GetMapping("/api/posts/{postId}")
     public ResponseEntity<Post> findPostByIdHandler(@PathVariable Integer postId) throws Exception {
         Post post = postService.findPostById(postId);
         return new ResponseEntity<>(post, HttpStatus.OK);
     }
 
     // Find all posts by user
-    @GetMapping("/posts/user/{userId}")
+    @GetMapping("/api/posts/user/{userId}")
     public ResponseEntity<List<Post>> findUsersPost(@PathVariable Integer userId) throws Exception {
         List<Post> posts = postService.findPostByUserId(userId);
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
     // Find all posts
-    @GetMapping("/posts")
+    @GetMapping("/api/posts")
     public ResponseEntity<List<Post>> findAllPost() throws Exception {
         List<Post> posts = postService.findAllPost();
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
     // Save post
-    @PutMapping("/posts/{postId}")
+    @PutMapping("/api/posts/{postId}")
     public ResponseEntity<Post> savedPostHandler(@RequestHeader("Authorization") String jwt,@PathVariable Integer postId) throws Exception {
          User reqUser=userService.findUserByJwt(jwt);
         Post post = postService.savedPost(postId, reqUser.getId() );
@@ -70,7 +70,7 @@ public class PostController {
     }
 
     // Like post
-    @PutMapping("/posts/like/{postId}")
+    @PutMapping("/api/posts/like/{postId}")
     public ResponseEntity<Post> likePostHandler(@RequestHeader("Authorization") String jwt,@PathVariable Integer postId) throws Exception {
          User reqUser=userService.findUserByJwt(jwt);
         Post post = postService.likePost(postId, reqUser.getId());
